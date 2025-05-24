@@ -6,11 +6,9 @@ const app = express();
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/usersDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect('mongodb://127.0.0.1:27017/usersDB');
 
+// Define User schema
 const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -19,7 +17,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-// Use `/api/users` instead of `/users`
+// POST /api/users - Create a new user
 app.post('/api/users', async (req, res) => {
     try {
         const { name, email, age } = req.body;
@@ -32,11 +30,13 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
+// GET /api/users - Retrieve all users
 app.get('/api/users', async (req, res) => {
     const users = await User.find();
     res.json(users);
 });
 
+// GET /api/users/:id - Retrieve a user by ID
 app.get('/api/users/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -47,6 +47,7 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
+// PUT /api/users/:id - Update a user by ID
 app.put('/api/users/:id', async (req, res) => {
     try {
         const { name, email, age } = req.body;
@@ -58,6 +59,7 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
+// DELETE /api/users/:id - Delete a user by ID
 app.delete('/api/users/:id', async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
@@ -68,5 +70,6 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
+// Start the server
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
